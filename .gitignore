@@ -1,0 +1,6 @@
+/target
+.cache
+/lib_managed
+/.settings
+project/project
+project/target
