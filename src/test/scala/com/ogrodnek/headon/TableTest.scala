@@ -11,5 +11,7 @@ class TableTest {
     table += ("And", "b", "test", "hellohello")
     
     println(table.toString)
+    println()
+    println(table.take(1).toString)
   }
 }

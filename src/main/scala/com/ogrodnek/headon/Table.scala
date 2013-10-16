@@ -3,17 +3,29 @@ package com.ogrodnek.headon
 import scala.collection.mutable.ArrayBuffer
 
 class Table(
-  columns: Seq[Column]
+  columns: Seq[Column],
+  rows: ArrayBuffer[Seq[String]] = new ArrayBuffer[Seq[String]]
 ) {
   val headerCharacter = "="
     
-  val rows = new ArrayBuffer[Seq[String]]
-  
   def +=(row: String*): Unit = {
     rows += row
   }
   
-  def getMaxLengths(): Seq[Int] = {
+  def take(n: Int): Table = {
+    new Table(columns, rows.take(n))
+  }
+  
+  override def toString(): String = {
+    val max: Seq[Int] = getMaxLengths()
+
+    formatHeader(max) ++
+    (rows map { row => 
+      formatRow(row, max)
+    }).mkString("\n")
+  }
+  
+  private def getMaxLengths(): Seq[Int] = {
     // initialize lengths to column names
     val max = ArrayBuffer(columns.map(_.name.size):_*)
     
@@ -30,23 +42,14 @@ class Table(
     }
     
     max
-  }
+  }  
   
-  override def toString(): String = {
-    val max: Seq[Int] = getMaxLengths()
-
-    formatHeader(max) ++
-    (rows map { row => 
-      formatRow(row, max)
-    }).mkString("\n")
-  }
-  
-  def formatHeader(size: Seq[Int]) = {
+  private def formatHeader(size: Seq[Int]) = {
     Seq(formatRow(columns.map(_.name), size),
       size.map(headerCharacter * _).mkString(" ") + "\n").mkString("\n")
   }
   
-  def formatRow(row: Seq[String], size: Seq[Int]): String = {
+  private def formatRow(row: Seq[String], size: Seq[Int]): String = {
     ((0 until row.size) map { i => 
         ("%%%ds".format(size(i))).format(row(i))
     }).mkString(" ")    
